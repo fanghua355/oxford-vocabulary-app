@@ -1,7 +1,10 @@
+/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/controller/VocabularyController.java
+/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/service/VocabularyImportService.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/util/CsvReader.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/service/WordService.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/model/dto/WordDTO.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/config/DataInitializer.java
+/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/OxfordVocabularyApplication.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/repository/WordRepository.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/controller/GlobalExceptionHandler.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/controller/StudyProgressController.java
@@ -10,10 +13,11 @@
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/service/StudyProgressService.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/repository/StudyProgressRepository.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/config/WebConfig.java
-/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/controller/WordController.java
+/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/mapper/VocabularyMapper.java
+/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/entity/Vocabulary.java
+/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/util/DataImportTool.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/service/impl/StudyProgressServiceImpl.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/model/dto/StudyProgressDTO.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/model/Word.java
-/Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/VocabularyApplication.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/model/StudyProgress.java
 /Users/henry/github/oxford-vocabulary-app/backend/src/main/java/com/oxford/vocabulary/config/CacheConfig.java
