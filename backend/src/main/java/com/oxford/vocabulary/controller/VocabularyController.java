@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/words")
+@RequestMapping("/api/words")
 public class VocabularyController {
 
     private final VocabularyMapper vocabularyMapper;

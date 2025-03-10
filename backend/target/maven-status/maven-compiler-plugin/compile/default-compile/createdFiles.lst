@@ -17,6 +17,7 @@ com/oxford/vocabulary/model/dto/StudyProgressDTO.class
 com/oxford/vocabulary/config/DataInitializer.class
 com/oxford/vocabulary/controller/VocabularyController.class
 com/oxford/vocabulary/repository/WordRepository.class
+com/oxford/vocabulary/util/DataImportTool.class
 com/oxford/vocabulary/util/CsvReader.class
 com/oxford/vocabulary/config/CacheConfig.class
 com/oxford/vocabulary/controller/StudyProgressController.class

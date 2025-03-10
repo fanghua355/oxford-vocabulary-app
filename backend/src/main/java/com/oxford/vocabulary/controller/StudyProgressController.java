@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/progress")
+@RequestMapping("/api/progress")
 public class StudyProgressController {
 
     private final StudyProgressService studyProgressService;
