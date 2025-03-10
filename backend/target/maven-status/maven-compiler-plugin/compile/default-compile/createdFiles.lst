@@ -8,12 +8,14 @@ com/oxford/vocabulary/controller/GlobalExceptionHandler.class
 com/oxford/vocabulary/entity/Vocabulary.class
 com/oxford/vocabulary/service/VocabularyImportService.class
 com/oxford/vocabulary/config/WebConfig.class
+com/oxford/vocabulary/config/DatabaseConnectionTest.class
 com/oxford/vocabulary/model/dto/WordDTO.class
 com/oxford/vocabulary/service/impl/WordServiceImpl.class
 com/oxford/vocabulary/mapper/VocabularyMapper.class
 com/oxford/vocabulary/service/WordService.class
 com/oxford/vocabulary/repository/StudyProgressRepository.class
 com/oxford/vocabulary/model/dto/StudyProgressDTO.class
+com/oxford/vocabulary/dto/PageResponse.class
 com/oxford/vocabulary/config/DataInitializer.class
 com/oxford/vocabulary/controller/VocabularyController.class
 com/oxford/vocabulary/repository/WordRepository.class

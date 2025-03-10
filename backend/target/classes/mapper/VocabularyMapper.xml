@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxford.vocabulary.mapper.VocabularyMapper">
+    
+    <resultMap id="BaseResultMap" type="com.oxford.vocabulary.entity.Vocabulary">
+        <id column="id" property="id" />
+        <result column="word" property="word" />
+        <result column="phonetic" property="phonetic" />
+        <result column="translation" property="translation" />
+        <result column="level" property="level" />
+        <result column="example" property="example" />
+        <result column="part_of_speech" property="partOfSpeech" />
+        <result column="definition" property="definition" />
+        <result column="synonyms" property="synonyms" />
+        <result column="antonyms" property="antonyms" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, word, phonetic, translation, level, example, part_of_speech, definition, synonyms, antonyms, 
+        created_at, updated_at
+    </sql>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByWord" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        WHERE word = #{word}
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+    </select>
+
+    <select id="findAllPaginated" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findByLevel" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        WHERE level = #{level}
+    </select>
+
+    <select id="findByLevelPaginated" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        WHERE level = #{level}
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) FROM vocabulary
+    </select>
+
+    <select id="countByLevel" resultType="int">
+        SELECT COUNT(*) FROM vocabulary
+        WHERE level = #{level}
+    </select>
+
+    <select id="searchByKeyword" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        WHERE word LIKE CONCAT('%', #{keyword}, '%')
+        OR translation LIKE CONCAT('%', #{keyword}, '%')
+        OR definition LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <select id="searchByKeywordPaginated" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM vocabulary
+        WHERE word LIKE CONCAT('%', #{keyword}, '%')
+        OR translation LIKE CONCAT('%', #{keyword}, '%')
+        OR definition LIKE CONCAT('%', #{keyword}, '%')
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByKeyword" resultType="int">
+        SELECT COUNT(*) FROM vocabulary
+        WHERE word LIKE CONCAT('%', #{keyword}, '%')
+        OR translation LIKE CONCAT('%', #{keyword}, '%')
+        OR definition LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+</mapper> 
