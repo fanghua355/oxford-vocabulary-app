@@ -21,60 +21,29 @@ const pageSize = ref(getStoreState('pageSize', 20))
 const filterLevel = ref(getStoreState('filterLevel', ''))
 const sortOrder = ref(getStoreState('sortOrder', 'asc'))
 const isMobile = ref(false)
+const total = ref(0)  // 添加总数记录
 
 // 检测设备是否为移动设备
 const checkMobile = () => {
   isMobile.value = window.innerWidth <= 768
   // 在移动设备上减少每页显示的数量，但不重置页码
-  const newPageSize = isMobile.value ? 10 : 20
-  if (pageSize.value !== newPageSize) {
-    pageSize.value = newPageSize
-  }
+  // const newPageSize = isMobile.value ? 10 : 20
+  // if (pageSize.value !== newPageSize) {
+  //   pageSize.value = newPageSize
+  // }
 }
 
 // 从Vuex获取单词列表
 const words = computed(() => store.state.words)
 
-// 过滤和排序后的单词列表
-const filteredWords = computed(() => {
-  let result = [...words.value]
-  
-  // 搜索过滤
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(word => 
-      word.word.toLowerCase().includes(query) || 
-      word.translation.toLowerCase().includes(query)
-    )
-  }
-  
-  // 级别过滤
-  if (filterLevel.value) {
-    result = result.filter(word => word.level === filterLevel.value)
-  }
-  
-  // 排序
-  result.sort((a, b) => {
-    if (sortOrder.value === 'asc') {
-      return a.word.localeCompare(b.word)
-    } else {
-      return b.word.localeCompare(a.word)
-    }
-  })
-  
-  return result
-})
-
 // 分页后的单词列表
 const paginatedWords = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return filteredWords.value.slice(start, end)
+  return words.value
 })
 
 // 总页数
 const totalPages = computed(() => {
-  return Math.ceil(filteredWords.value.length / pageSize.value)
+  return Math.ceil(total.value / pageSize.value)
 })
 
 // 监听状态变化并保存到 store
@@ -106,15 +75,12 @@ const playPronunciation = (word) => {
 
 // 加载单词数据
 const loadWords = async (force = false) => {
-  // 如果已经有数据且不是强制刷新，不需要重新加载
-  if (words.value.length > 0 && !force) {
-    return
-  }
-  
   store.commit('setLoading', true)
   try {
-    const response = await wordApi.getWords()
+    const response = await wordApi.getWords(currentPage.value - 1, pageSize.value, sortOrder.value)
     store.commit('setWords', response.data)
+    const totalCount = response.headers['x-total-count']
+    total.value = totalCount ? parseInt(totalCount) : 0
   } catch (error) {
     console.error('加载单词失败:', error)
     ElMessage({
@@ -127,21 +93,25 @@ const loadWords = async (force = false) => {
 }
 
 // 搜索单词
-const searchWordsFromApi = async () => {
+const searchWordsFromApi = async (resetPage = true) => {
   if (!searchQuery.value) {
-    // 如果搜索词为空且已有数据，不需要重新加载
-    if (words.value.length > 0) {
-      return
-    }
     loadWords()
     return
   }
-  
+
   store.commit('setLoading', true)
   try {
-    const response = await wordApi.searchWords(searchQuery.value)
+    const page = resetPage ? 0 : currentPage.value - 1
+    if (resetPage) {
+      currentPage.value = 1
+    }
+    const response = await wordApi.searchWords(searchQuery.value, page, pageSize.value, sortOrder.value)
     store.commit('setWords', response.data)
-    currentPage.value = 1  // 搜索时重置到第一页
+    const totalCount = response.headers['x-total-count']
+    total.value = totalCount ? parseInt(totalCount) : 0
+    if (!totalCount) {
+      console.warn('未能获取到总数信息')
+    }
   } catch (error) {
     console.error('搜索单词失败:', error)
     ElMessage({
@@ -154,21 +124,25 @@ const searchWordsFromApi = async () => {
 }
 
 // 按级别过滤
-const filterByLevel = async () => {
+const filterByLevel = async (resetPage = true) => {
   if (!filterLevel.value) {
-    // 如果没有选择级别且已有数据，不需要重新加载
-    if (words.value.length > 0) {
-      return
-    }
     loadWords()
     return
   }
-  
+
   store.commit('setLoading', true)
   try {
-    const response = await wordApi.getWordsByLevel(filterLevel.value)
+    const page = resetPage ? 0 : currentPage.value - 1
+    if (resetPage) {
+      currentPage.value = 1
+    }
+    const response = await wordApi.getWordsByLevel(filterLevel.value, page, pageSize.value, sortOrder.value)
     store.commit('setWords', response.data)
-    currentPage.value = 1  // 筛选时重置到第一页
+    const totalCount = response.headers['x-total-count']
+    total.value = totalCount ? parseInt(totalCount) : 0
+    if (!totalCount) {
+      console.warn('未能获取到总数信息')
+    }
   } catch (error) {
     console.error('按级别过滤单词失败:', error)
     ElMessage({
@@ -185,14 +159,13 @@ const resetFilters = () => {
   searchQuery.value = ''
   filterLevel.value = ''
   currentPage.value = 1
-  if (words.value.length === 0) {
-    loadWords()
-  }
+  loadWords()
 }
 
 // 刷新单词列表
 const refreshWordList = () => {
   store.commit('setWords', [])  // 清空现有数据
+  currentPage.value = 1
   loadWords(true)  // 强制刷新
 }
 
@@ -216,46 +189,51 @@ onUnmounted(() => {
 })
 
 // 监听搜索查询变化
-watch(searchQuery, (newVal, oldVal) => {
-  if (newVal === '') {
-    // 如果搜索词为空，恢复原始数据
-    if (words.value.length === 0) {
-      loadWords()
-    }
-  } else {
-    // 有搜索词时进行搜索
-    searchWordsFromApi()
-  }
+watch(searchQuery, (newVal) => {
+  searchWordsFromApi(true)  // 搜索变化时重置页码
 }, { flush: 'post' })
 
 // 监听级别过滤变化
 watch(filterLevel, (newVal, oldVal) => {
   if (newVal !== oldVal) {
-    if (newVal === '') {
-      // 如果清除了过滤，恢复原始数据
-      if (words.value.length === 0) {
-        loadWords()
-      }
-    } else {
-      // 有过滤条件时进行过滤
-      filterByLevel()
-    }
+    filterByLevel(true)  // 过滤变化时重置页码
+  }
+}, { flush: 'post' })
+
+// 监听排序变化
+watch(sortOrder, () => {
+  if (searchQuery.value) {
+    searchWordsFromApi(false)  // 排序变化时不重置页码
+  } else if (filterLevel.value) {
+    filterByLevel(false)  // 排序变化时不重置页码
+  } else {
+    loadWords()  // 排序变化时不重置页码
   }
 }, { flush: 'post' })
 
 // 处理页码改变
-const handleCurrentChange = (val) => {
+const handleCurrentChange = async (val) => {
   currentPage.value = val
+  if (searchQuery.value) {
+    await searchWordsFromApi(false)  // 页码变化时不重置页码
+  } else if (filterLevel.value) {
+    await filterByLevel(false)  // 页码变化时不重置页码
+  } else {
+    await loadWords()
+  }
 }
 
 // 处理每页显示数量改变
-const handleSizeChange = (val) => {
-  const oldPageSize = pageSize.value
+const handleSizeChange = async (val) => {
   pageSize.value = val
-  
-  // 计算新的页码，保持显示的数据范围大致相同
-  const oldStart = (currentPage.value - 1) * oldPageSize
-  currentPage.value = Math.floor(oldStart / val) + 1
+  currentPage.value = 1  // 重置到第一页
+  if (searchQuery.value) {
+    await searchWordsFromApi(true)  // 每页数量变化时重置页码
+  } else if (filterLevel.value) {
+    await filterByLevel(true)  // 每页数量变化时重置页码
+  } else {
+    await loadWords()
+  }
 }
 </script>
 
@@ -373,17 +351,17 @@ const handleSizeChange = (val) => {
         </div>
       </div>
       
-      <!-- 分页控件 -->
+      <!-- 分页器 -->
       <div class="pagination-container">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
+          :total="total"
           :page-sizes="[10, 20, 50, 100]"
-          :total="filteredWords.length"
-          :pager-count="3"
-          layout="prev, pager, next"
-          @size-change="handleSizeChange"
+          :pager-count="isMobile ? 3 : 7"
+          layout=" prev, pager, next, total"
           @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
           background
         />
       </div>
@@ -435,7 +413,10 @@ const handleSizeChange = (val) => {
   }
 
   :deep(.el-pagination) {
-    padding: 0 !important;
+    padding: 10px 0 !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
 
   :deep(.el-pagination .el-pagination__total) {
@@ -446,7 +427,23 @@ const handleSizeChange = (val) => {
   }
 
   :deep(.el-pagination .el-pagination__sizes) {
-    display: none !important;
+    margin: 0 !important;
+    height: 28px !important;
+  }
+
+  :deep(.el-pagination button) {
+    min-width: 28px !important;
+    height: 28px !important;
+  }
+
+  :deep(.el-pagination .el-pager li) {
+    min-width: 28px !important;
+    height: 28px !important;
+  }
+
+  :deep(.el-pagination .el-pagination__jump) {
+    margin: 0 !important;
+    height: 28px !important;
   }
 
   .filter-card,
@@ -547,6 +544,7 @@ const handleSizeChange = (val) => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: right;
   }
 
   .pronunciation-button.el-button {
@@ -680,7 +678,7 @@ const handleSizeChange = (val) => {
 }
 
 .mobile-word-translation {
-  margin: 0;
+  margin-right: 20px;
 }
 
 .pagination-container {
