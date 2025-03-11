@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 根据当前环境动态设置 API URL
 const API_URL = import.meta.env.PROD 
-  ? '/oxford-vocabulary/api'  // 生产环境使用相对路径
+  ? 'http://124.223.76.88/oxford-vocabulary/api'  // 生产环境使用完整URL
   : window.location.hostname === 'localhost' 
     ? 'http://localhost:8080/api'
     : `http://${window.location.hostname}:8080/api`;

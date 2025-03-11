@@ -15,7 +15,7 @@ import StudyPlan from './views/StudyPlan.vue'
 
 // 创建路由
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/'),
   routes: [
     { path: '/', component: Home },
     { path: '/word-list', component: WordList },
