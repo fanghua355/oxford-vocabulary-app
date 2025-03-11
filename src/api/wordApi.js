@@ -13,7 +13,8 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
+  exposedHeaders: ['x-total-count']
 });
 
 // 添加请求拦截器，用于调试
@@ -25,31 +26,33 @@ apiClient.interceptors.request.use(config => {
 // 添加响应拦截器，用于调试
 apiClient.interceptors.response.use(
   response => {
-    console.log('Received response from:', response.config.url, response.status);
-    return response;
+    // 调试信息
+    console.log('Response headers:', response.headers)
+    console.log('Total count:', response.headers['x-total-count'])
+    return response
   },
   error => {
-    console.error('API Error:', error.config.url, error.message);
-    return Promise.reject(error);
+    console.error('API Error:', error)
+    return Promise.reject(error)
   }
 );
 
 export default {
   // 单词相关API
-  getWords() {
-    return apiClient.get('/words');
+  getWords(page = 0, size = 20, sort = 'asc') {
+    return apiClient.get(`/words?page=${page}&size=${size}&sort=${sort}`);
   },
   
   getWordById(id) {
     return apiClient.get(`/words/${id}`);
   },
   
-  getWordsByLevel(level) {
-    return apiClient.get(`/words/level/${level}`);
+  getWordsByLevel(level, page = 0, size = 20, sort = 'asc') {
+    return apiClient.get(`/words/level/${level}?page=${page}&size=${size}&sort=${sort}`);
   },
   
-  searchWords(keyword) {
-    return apiClient.get(`/words/search?keyword=${encodeURIComponent(keyword)}`);
+  searchWords(keyword, page = 0, size = 20, sort = 'asc') {
+    return apiClient.get(`/words/search?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}&sort=${sort}`);
   },
   
   // 学习进度相关API

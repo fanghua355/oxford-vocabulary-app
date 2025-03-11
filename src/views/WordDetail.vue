@@ -263,6 +263,7 @@ onMounted(() => {
   align-items: center;
 }
 
+
 .header-actions {
   display: flex;
   gap: 10px;
@@ -413,7 +414,7 @@ onMounted(() => {
   .header-actions {
     width: 100%;
     gap: 4px;
-    margin-top: 8px;
+    padding-left: 10px;
   }
 
   .header-actions .el-button {

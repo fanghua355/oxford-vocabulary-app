@@ -29,7 +29,9 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         
         // 暴露响应头
-        config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        config.setExposedHeaders(Arrays.asList(
+            "x-total-count"  // 使用小写形式
+        ));
         
         // 设置跨域请求的有效期
         config.setMaxAge(3600L);

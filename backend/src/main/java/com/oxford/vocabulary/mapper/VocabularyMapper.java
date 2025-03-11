@@ -44,4 +44,24 @@ public interface VocabularyMapper {
             "OR translation LIKE CONCAT('%', #{keyword}, '%') " +
             "OR definition LIKE CONCAT('%', #{keyword}, '%')")
     List<Vocabulary> searchByKeyword(@Param("keyword") String keyword);
+
+    @Select("SELECT * FROM vocabulary ORDER BY word ${sort} LIMIT #{offset}, #{pageSize}")
+    List<Vocabulary> findAllPaged(@Param("offset") int offset, @Param("pageSize") int pageSize, @Param("sort") String sort);
+
+    @Select("SELECT * FROM vocabulary WHERE level = #{level} ORDER BY word ${sort} LIMIT #{offset}, #{pageSize}")
+    List<Vocabulary> findByLevelPaged(@Param("level") String level, @Param("offset") int offset, @Param("pageSize") int pageSize, @Param("sort") String sort);
+    
+    @Select("SELECT COUNT(*) FROM vocabulary WHERE level = #{level}")
+    int countByLevel(@Param("level") String level);
+
+    @Select("SELECT * FROM vocabulary WHERE word LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR translation LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR definition LIKE CONCAT('%', #{keyword}, '%') " +
+            "ORDER BY word ${sort} LIMIT #{offset}, #{pageSize}")
+    List<Vocabulary> searchByKeywordPaged(@Param("keyword") String keyword, @Param("offset") int offset, @Param("pageSize") int pageSize, @Param("sort") String sort);
+
+    @Select("SELECT COUNT(*) FROM vocabulary WHERE word LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR translation LIKE CONCAT('%', #{keyword}, '%') " +
+            "OR definition LIKE CONCAT('%', #{keyword}, '%')")
+    int countByKeyword(@Param("keyword") String keyword);
 } 

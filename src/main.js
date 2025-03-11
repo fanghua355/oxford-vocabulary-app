@@ -276,7 +276,14 @@ const store = createStore({
       currentWord: null,
       studyProgress: {},
       loading: false,
-      userId: 1 // 模拟用户ID，实际应用中应从用户认证系统获取
+      userId: 1, // 模拟用户ID，实际应用中应从用户认证系统获取
+      wordListState: {
+        currentPage: 1,
+        pageSize: 20,
+        searchQuery: '',
+        filterLevel: '',
+        sortOrder: 'asc'
+      }
     }
   },
   mutations: {
@@ -291,6 +298,12 @@ const store = createStore({
     },
     setLoading(state, status) {
       state.loading = status
+    },
+    setWordListState(state, payload) {
+      state.wordListState = {
+        ...state.wordListState,
+        ...payload
+      }
     }
   },
   actions: {

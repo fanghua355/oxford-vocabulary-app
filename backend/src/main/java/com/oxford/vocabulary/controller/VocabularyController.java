@@ -13,6 +13,7 @@ import java.util.List;
 public class VocabularyController {
 
     private final VocabularyMapper vocabularyMapper;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     @Autowired
     public VocabularyController(VocabularyMapper vocabularyMapper) {
@@ -20,8 +21,16 @@ public class VocabularyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Vocabulary>> getAllVocabularies() {
-        return ResponseEntity.ok(vocabularyMapper.findAll());
+    public ResponseEntity<List<Vocabulary>> getAllVocabularies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "asc") String sort) {
+        String sortDirection = sort.equalsIgnoreCase("desc") ? "DESC" : "ASC";
+        List<Vocabulary> results = vocabularyMapper.findAllPaged(page * size, size, sortDirection);
+        int total = vocabularyMapper.count();
+        return ResponseEntity.ok()
+                .header("x-total-count", String.valueOf(total))
+                .body(results);
     }
 
     @GetMapping("/{wordOrId}")
@@ -44,12 +53,30 @@ public class VocabularyController {
     }
 
     @GetMapping("/level/{level}")
-    public ResponseEntity<List<Vocabulary>> getVocabulariesByLevel(@PathVariable String level) {
-        return ResponseEntity.ok(vocabularyMapper.findByLevel(level));
+    public ResponseEntity<List<Vocabulary>> getVocabulariesByLevel(
+            @PathVariable String level,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "asc") String sort) {
+        String sortDirection = sort.equalsIgnoreCase("desc") ? "DESC" : "ASC";
+        List<Vocabulary> results = vocabularyMapper.findByLevelPaged(level, page * size, size, sortDirection);
+        int total = vocabularyMapper.countByLevel(level);
+        return ResponseEntity.ok()
+                .header("x-total-count", String.valueOf(total))
+                .body(results);
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<Vocabulary>> searchVocabularies(@RequestParam String keyword) {
-        return ResponseEntity.ok(vocabularyMapper.searchByKeyword(keyword));
+    public ResponseEntity<List<Vocabulary>> searchVocabularies(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "asc") String sort) {
+        String sortDirection = sort.equalsIgnoreCase("desc") ? "DESC" : "ASC";
+        List<Vocabulary> results = vocabularyMapper.searchByKeywordPaged(keyword, page * size, size, sortDirection);
+        int total = vocabularyMapper.countByKeyword(keyword);
+        return ResponseEntity.ok()
+                .header("x-total-count", String.valueOf(total))
+                .body(results);
     }
 } 
